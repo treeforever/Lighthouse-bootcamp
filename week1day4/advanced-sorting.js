@@ -7,11 +7,8 @@ var students = [
 
 function advancedSorting(roster){
   roster.sort(function(a,b){
-    if(a.name > b.name){
-      return 1;
-    }
-    if(a.name < b.name){
-      return -1;
+    if(a.name !== b.name){
+      return a.name > b.name;
     }
     if(a.name === b.name){
       return b.age - a.age;
