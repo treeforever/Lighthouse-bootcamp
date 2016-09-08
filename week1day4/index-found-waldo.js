@@ -1,8 +1,9 @@
 function findWaldo(arr, found) {
   var count = 0;
-  arr.forEach(function(n){
-    if (n === "Waldo"){
-      found(count);
+
+  arr.forEach(function(name){
+    if (name === "Waldo"){
+      // found(count);
     }else{
       count++;
     }
