@@ -7,6 +7,6 @@ var loadedDie = (function () {
   }
 })();
 
-console.log(loadedDie());  // 5
-console.log(loadedDie());  // 4
-console.log(loadedDie());  // 6
+console.log(loadedDie());
+console.log(loadedDie());
+console.log(loadedDie()); 
