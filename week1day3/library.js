@@ -21,101 +21,91 @@ var library = {
                       tracks: ["t03"]
                     }
              },
+
   printPlaylists: function () {
-
-             for (var key in this.playlists){
-               printItem(playLists[key]);
-             }
-
-             function printItem(item) {
-               console.log(`${item.id}: ${item.name} - ${item.tracks.length} tracks`);
-             }
-            },
+    for (var key in this.playlists) {
+      var item = this.playlists[key];
+      console.log(`${item.id}: ${item.name} - ${item.tracks.length} tracks`);
+    }
+  },
 
   printTracks: function () {
-              var tracks = this.tracks;
-              for (var key in tracks){
-                printSingleTrack(tracks[key]);
-              }
-            },
+    for (var key in this.tracks){
+      this.printSingleTrack(this.tracks[key]);
+    }
+  },
+
   printPlaylist: function (playlistId) {
-              if(this.tracks.hasOwnProperty(playlistId)){
-                var track = this.tracks[playlistId];
-                printSingleTrack(track);
-              }else{
-                var playId = this.playlists[playlistId];
-                console.log(`${playId.id}: ${playId.name} - ${playId.tracks.length} tracks`);
-              }
-            },
+    var playId = this.playlists[playlistId];
+    console.log(`${playId.id}: ${playId.name} - ${playId.tracks.length} tracks`);
+
+    playId.tracks.forEach(function (trackId) {
+      console.log(trackId + ": " + this.tracks[trackId].name + " by " + this.tracks[trackId].artist + " (" + this.tracks[trackId].album + ")")
+    }.bind(this));
+  },
+
+  uid: function () {
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  },
+
+  lowerCaseFound: function (subject, term) {
+    return subject.toLowerCase().search(term) !== -1;
+  },
 
   addTrackToPlaylist: function (trackId, playlistId) {
-              if(this.tracks.hasOwnProperty(trackId) &&
-                 this.playlists.hasOwnProperty(playlistId) &&
-                 this.playlists[playlistId].tracks.indexOf(trackId) === -1){
-                    this.playlists[playlistId].tracks.push(trackId);
-                    return this.playlists[playlistId].tracks;
-              }
-            },
+    if (!this.tracks.hasOwnProperty(trackId)) {
+      return;
+    }
+    
+    if (!this.playlists.hasOwnProperty(playlistId)) {
+      return;
+    }
+
+    if (this.playlists[playlistId].tracks.indexOf(trackId) !== -1) {
+      return;
+    }
+
+    this.playlists[playlistId].tracks.push(trackId);
+  },
 
   addTrack: function (name, artist, album) {
+    var newId = this.uid();
 
-              var newId = uid();
+    this.tracks[newId] = {
+      id: newId,
+      name: name,
+      artist: artist,
+      album: album
+    };
+  },
 
-              this.tracks[newId] = {};
-              this.tracks[newId].id = newId;
-              this.tracks[newId].name = name;
-              this.tracks[newId].artist = artist;
-              this.tracks[newId].album = album;
+  addPlaylist: function (name) {
+    var newId = this.uid();
 
+    this.playlists[newId] = {
+      id: newId,
+      name: name,
+      tracks: []
+    };
+  },
 
-              this.tracks[newId] = {
-                id: newId,
-                name: name,
-                artist: artist,
-                album: album
-              };
-
-              return this.tracks;
-            },
-
- addPlaylist: function (name) {
-
-              var newId = uid();
-
-              this.playlists[newId] = {
-                id: newId,
-                name: name,
-                tracks: []
-              };
-
-              return this.playlists;
-            },
+  printSingleTrack: function (t) {
+    console.log(t.id + ": " + t.name + " by " + t.artist + " (" + t.album + ")");
+  },
 
   printSearchResults: function(query) {
-              var newQ = query.toLowerCase();
+    var newQ = query.toLowerCase();
 
-              for (var key in this.tracks) {
+    for (var key in this.tracks) {
+      var track = this.tracks[key];
 
-                var track = this.tracks[key];
-
-                if(lowerCaseFound(track.name, newQ) ||
-                   lowerCaseFound(track.artist, newQ) ||
-                   lowerCaseFound(track.album, newQ)) {
-                  console.log(track);
-                }
-              }
-            }
-}
-function lowerCaseFound(subject, term) {
-  return subject.toLowerCase().search(term) !== -1;
+      if (this.lowerCaseFound(track.name, newQ) ||
+          this.lowerCaseFound(track.artist, newQ) ||
+          this.lowerCaseFound(track.album, newQ)) {
+        console.log(track);
+      }
+    }
+  }
 }
 
-function uid() {
-  return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-}
-
-function printSingleTrack(t) {
-  console.log(t.id + ": " + t.name + " by " + t.artist + " (" + t.album + ")");
-}
-
-library.printPlaylists();
+library.printPlaylist("p01");
