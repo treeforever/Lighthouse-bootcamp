@@ -53,7 +53,6 @@ function followMost(library) {
   });
   return personFollowMost.name;
 }
-// console.log(followMost(data));
 
 function mostFollowers(library) {
   var followerArr = [];
@@ -65,10 +64,9 @@ function mostFollowers(library) {
 
   var m = _.max(followerArr, function(u) {return u.followersNum;});
   var mostFollowersArr = [];
-  mostFollowersArr.push(m);
   followerArr.forEach(function(item) {
     if (item.followersNum === m.followersNum) {
-      mostFollowersArr.push(item);
+      mostFollowersArr.push(item.name);
     }
   });
   return mostFollowersArr;
@@ -114,9 +112,26 @@ function findFollowersOver30(library) {
   return filteredOver30(newLib);
 }
 
-console.log(mostFollowersOver30(data));
+function follow30Most(library) {
+  var filteredOver30 = findFollowersOver30(library);
+  var filFollowArr = [];
+  for (var i in filteredOver30) {
+    filFollowArr.push(filteredOver30[i]);
+  }
 
+  var k = _.max(filFollowArr, function(u){
+     return u.follows.length;
+   });
+  var kArr = [];
+  filFollowArr.forEach(function(item) {
+     if (item.follows.length === k.follows.length) {
+       kArr.push(item.name);
+     }
+   });
+   return kArr;
 
+}
+console.log(follow30Most(data));
 
 module.exports = {
   list: list,
@@ -124,8 +139,3 @@ module.exports = {
   data: data,
 
 };
-//{
-// name: "Alice",
-// follows: ["f02", "f03", "f04"],
-// followed by: ["f03", "f04"]
-//}
