@@ -138,7 +138,6 @@ function listNonMutualFollowUsers(library) {
     for (var k = 0; k < library[i].follows.length; k++){
       if (findNotFollowBack(i, library[i].follows[k], library)) {
         listNonMFUsers.push(i);
-        // return;
       }
     }
   }
@@ -151,11 +150,25 @@ function findNotFollowBack(u1, u2, library) {
   }
 
 }
-console.log(listNonMutualFollowUsers(data));
+
+function listReach(library) {
+  var userList = list(library);
+  var uList = [];
+  for (var i in userList) {
+    userList[i].followNum = userList[i].follows.length;
+    userList[i].followerNum = userList[i].followed_by.length;
+    userList[i].sum = userList[i].followNum + userList[i].followerNum;
+
+    var user = {};
+    user.name = userList[i].name;
+    user.reach = userList[i].sum;
+    uList.push(user);
+  }
+  return uList;
+}
 
 module.exports = {
   list: list,
   findFollowers: findFollowers,
   data: data,
-
 };
