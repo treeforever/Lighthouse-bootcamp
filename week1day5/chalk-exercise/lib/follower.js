@@ -129,9 +129,29 @@ function follow30Most(library) {
      }
    });
    return kArr;
+}
+
+function listNonMutualFollowUsers(library) {
+  var listNonMFUsers = [];
+
+  for (var i in library) {
+    for (var k = 0; k < library[i].follows.length; k++){
+      if (findNotFollowBack(i, library[i].follows[k], library)) {
+        listNonMFUsers.push(i);
+        // return;
+      }
+    }
+  }
+  return _.uniq(listNonMFUsers);
+}
+
+function findNotFollowBack(u1, u2, library) {
+  if (library[u2].follows.indexOf(u1) === -1) {
+    return true;
+  }
 
 }
-console.log(follow30Most(data));
+console.log(listNonMutualFollowUsers(data));
 
 module.exports = {
   list: list,
