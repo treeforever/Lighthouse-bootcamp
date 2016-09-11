@@ -40,7 +40,83 @@ function findFollowers(user, library) {
   }
   return followers;
 }
-// console.log(findFollowers("f02", data));
+
+function followMost(library) {
+  var users = Object.keys(library);
+  var userArr = [];
+  users.forEach(function(userId) {
+    userArr.push(library[userId]);
+  });
+
+ var personFollowMost = _.max(userArr, function(u){
+    return u.follows.length;
+  });
+  return personFollowMost.name;
+}
+// console.log(followMost(data));
+
+function mostFollowers(library) {
+  var followerArr = [];
+  var newLib = library;
+  for (var i in newLib) {
+    newLib[i].followersNum = findFollowers(i, newLib).length;
+    followerArr.push(newLib[i]);
+  }
+
+  var m = _.max(followerArr, function(u) {return u.followersNum;});
+  var mostFollowersArr = [];
+  mostFollowersArr.push(m);
+  followerArr.forEach(function(item) {
+    if (item.followersNum === m.followersNum) {
+      mostFollowersArr.push(item);
+    }
+  });
+  return mostFollowersArr;
+}
+
+function mostFollowersOver30(library) {
+  var filFollowerArr = [];
+  var filteredLib = findFollowersOver30(library);
+  for (var i in filteredLib) {
+    filFollowerArr.push(filteredLib[i]);
+  }
+
+  var n = _.max(filFollowerArr, function(u){
+     return u.followed_by_over_30.length;
+   });
+  var nArr = [];
+  filFollowerArr.forEach(function(item) {
+     if (item.followed_by_over_30.length === n.followed_by_over_30.length) {
+       nArr.push(item.name);
+     }
+   });
+   return nArr;
+}
+
+function findFollowersOver30(library) {
+  var userOver30 = [];
+
+  for (var item in library) {
+    if (library[item].age > 30) {
+      userOver30.push(item);
+    }
+  }
+
+  var newLib = list(library);
+  function filteredOver30(lib) {
+    for (var i in lib) {
+      lib[i].followed_by_over_30 = lib[i].followed_by.filter(function (a) {
+        return userOver30.indexOf(a) >= 0;
+      });
+    }
+    return lib;
+    }
+  return filteredOver30(newLib);
+}
+
+console.log(mostFollowersOver30(data));
+
+
 
 module.exports = {
   list: list,
