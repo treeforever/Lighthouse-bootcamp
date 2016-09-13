@@ -6,11 +6,11 @@ function downloadImageByURL(url, filePath) {
 }
 
 function downloadAllAvatars(contributors) {
-  if(!fs.existsSync('./images/')) {
-    fs.mkdir('images');
+  if(!fs.existsSync('./avatars/')) {
+    fs.mkdir('avatars');
   }
     contributors.forEach(function(person) {
-      downloadImageByURL(person.avatar_url, `./images/${person.login}.png`);
+      downloadImageByURL(person.avatar_url, `./avatars/${person.login}.png`);
     });
 
 }
