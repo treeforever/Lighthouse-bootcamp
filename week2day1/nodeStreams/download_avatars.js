@@ -1,18 +1,43 @@
 var request = require("request");
 var fs = require('fs');
-var contributorList = require("./getRepoContributors");
-var getRepoContributors = contributorList.getRepoContributors;
+require('dotenv').config();
+var token = process.env.token;
+var download = require("./download_function");
+var downloadAllAvatars = download.downloadAllAvatars;
 
-function downloadImageByURL(url, filePath) {
-  request(url).pipe(fs.createWriteStream(filePath));
+function githubRequest(endpoint, callback) {
+  var requestData = {
+    url: `http://api.github.com${endpoint}`,
+    auth: {
+      bearer: token
+    },
+    headers: {
+      'User-Agent': "request"
+    }
+  };
+  request.get(requestData, callback);
 }
 
-function downloadAllAvatars(contributors) {
-    contributors.forEach(function(person) {
-      downloadImageByURL(person.avatar_url, `./images/${person.login}.png`);
-    });
+function getRepoContributors(repoOwner, repoName, callback) {
+  githubRequest(`/repos/${repoOwner}/${repoName}/contributors`, (err, response, body) => {
+
+    var data = JSON.parse(body);
+    if (data.message === 'Not Found') {
+      throw new Error('nonexisting owner or repo provided');
+    } else if (data.message === 'Bad credentials') {
+      throw new Error('Bad credentials');
+    } else {
+      callback(data);
+    }
+  });
 }
 
-getRepoContributors(process.argv[2], process.argv[3], function(data){
-  downloadAllAvatars(data);
-});
+if (!fs.existsSync('./.env')){
+  throw new Error ("Don't have .env file");
+} else {
+  if (process.argv.length !== 4) {
+    throw new Error ("incorrect number of arguments");
+  } else {
+    getRepoContributors(process.argv[2], process.argv[3], downloadAllAvatars);
+  }
+}
