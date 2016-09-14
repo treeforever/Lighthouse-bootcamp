@@ -40,6 +40,7 @@ function findFollowers(user, library) {
   }
   return followers;
 }
+console.log(findFollowers('f01', data));
 
 function followMost(library) {
   var users = Object.keys(library);

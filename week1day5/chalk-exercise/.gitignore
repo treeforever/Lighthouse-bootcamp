@@ -1,0 +1,4 @@
+*package copy.json
+*package.json
+*.DS_Store
+*node_modules/

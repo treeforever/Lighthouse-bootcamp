@@ -1,5 +1,3 @@
-var _ = require("underscore");
-
 function check(num) {
   var numArr = num.toString().split("");
   var reversedNum = numArr.reverse();
