@@ -77,7 +77,7 @@ function uniqueStarUrl(data){
 getRepoContributors(process.argv[2], process.argv[3], function(contributors) {
   getStarredURL(contributors, function(list) {
     for (var i = 0; i < 5; i++) {
-      console.log(list[i]);
+      console.log(`[${list[i].count} stars] ${list[i].name}`);
     }
   });
 });
