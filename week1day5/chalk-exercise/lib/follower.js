@@ -20,21 +20,27 @@ var data =
            age: 25,
            follows: ["f05"]}};
 
-function list(library) {
-  var userList = library;
-  var users = Object.keys(library);
-  for (var i = 0; i < users.length; i++) {
-    userList[users[i]].followed_by = findFollowers(users[i], library);
-    userList[users[i]] = _.omit(userList[users[i]], 'age');
-  }
-  return userList;
+function usersWithFollowInfo(library) {
+  var userIds = Object.keys(library);
+
+  var users = userIds.map(function(userId) {
+    return library[userId];
+  });
+
+  usersWithFollowInfo = users.map(function(user) {
+    var newU = _.pick(user, 'name', 'follows');
+    newU.followedBy = findFollowers(userId, library);
+    return newU;
+  });
+
+  return usersWithFollowInfo;
 }
 
-function findFollowers(user, library) {
+function findFollowers(userId, library) {
   var users = Object.keys(library);
   var followers = [];
   for (var i = 0; i < users.length; i++) {
-    if (library[users[i]].follows.indexOf(user) !== -1) {
+    if (library[users[i]].follows.indexOf(userId) !== -1) {
       followers.push(users[i]);
     }
   }
