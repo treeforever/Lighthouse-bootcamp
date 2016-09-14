@@ -7,6 +7,10 @@ var loadedDie = (function () {
   }
 })();
 
-console.log(loadedDie());
-console.log(loadedDie());
-console.log(loadedDie()); 
+// console.log(loadedDie());
+// console.log(loadedDie());
+// console.log(loadedDie());
+
+loadedDie();
+loadedDie();
+loadedDie();
