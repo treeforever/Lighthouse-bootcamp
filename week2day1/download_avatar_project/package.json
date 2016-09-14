@@ -1,0 +1,24 @@
+{
+  "name": "download_avatar_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "download_avatars.js", "download_function.js"
+  "dependencies": {
+    "env": "0.0.2",
+    "request": "^2.74.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/treeforever/Lighthouse-bootcamp/tree/master/week2day1/download_avatar_project"
+  },
+  "keywords": [
+    "github",
+    "API"
+  ],
+  "author": "Mengqi",
+  "license": "ISC"
+}
