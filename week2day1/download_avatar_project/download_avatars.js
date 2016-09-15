@@ -20,7 +20,11 @@ function githubRequest(endpoint, callback) {
 
 function getRepoContributors(repoOwner, repoName, callback) {
   githubRequest(`/repos/${repoOwner}/${repoName}/contributors`, (err, response, body) => {
+    if (err) {
+      throw new Error("Internet is down!");
+    }
 
+    //todo: change to status.code
     var data = JSON.parse(body);
     if (data.message === 'Not Found') {
       throw new Error('nonexisting owner or repo provided');
@@ -34,10 +38,8 @@ function getRepoContributors(repoOwner, repoName, callback) {
 
 if (!fs.existsSync('./.env')){
   throw new Error ("Don't have .env file");
-} else {
-  if (process.argv.length !== 4) {
-    throw new Error ("incorrect number of arguments");
-  } else {
-    getRepoContributors(process.argv[2], process.argv[3], downloadAllAvatars);
-  }
 }
+if (process.argv.length !== 4) {
+    throw new Error ("incorrect number of arguments");
+  }
+  getRepoContributors(process.argv[2], process.argv[3], downloadAllAvatars);

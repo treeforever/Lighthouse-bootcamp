@@ -1,11 +1,11 @@
-**.DS_Store
+.DS_Store
 
-**/node_modules/
+/node_modules/
 
-**/images/
+.env
 
-**.env
+./test.js
 
-**./test.js
+.jshintrc
 
-**.jshintrc
+npm-debug.log
