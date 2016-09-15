@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-    <!-- Write EJS code here to display shortened links -->
-    <h2>shortened url</h2>
+    <h2>Shortened Url</h2>
     <ul>
-      <% urlTable.forEach(function(obj) { %>
-        <li><%=obj.name %> - <%= obj.url %></li>
-    <% }); %>
-  </ul>
+      <% for (key in urlDatabase) { %>
+        <li><%= key %> ---> <a href="<%= urlDatabase[key]%>"><%= urlDatabase[key] %></a>
+          <form method="POST" action="/urls/<%= key %>?_method=DELETE">
+            <button type="summit">delete</button>
+          </form>
+        </li>
+      <% }; %>
+    </ul>
+    <p>did it update?</p>
+
 </body>
 </html>
