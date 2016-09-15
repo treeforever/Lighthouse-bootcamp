@@ -35,9 +35,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls/create", (req, res) => {
-
   var longURL = req.body.longURL;
-
   var randomStr = generateRandomString();
 
   urlDatabase[randomStr] = longURL;
@@ -48,15 +46,21 @@ app.post("/urls/create", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  var templateVars = { shortURL: req.params.id };
+  var shortURL = req.params.id;
+  console.log(shortURL);
+  console.log(urlDatabase[shortURL]);
+  res.render("urls_show", {
+    urlDatabase: urlDatabase,
+    shortURL: shortURL
+  });
+});
 
-  var href = urlDatabase[templateVars.shortURL];
-
-  res.render("urls_show", {href: href});
+app.put("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect('/urls');
 });
 
 app.get("/u/:shortURL", (req, res) => {
-
   var shortURL = req.params.shortURL;
   var longURL = urlDatabase[shortURL];
   console.log(`shortURL is ${shortURL}, long is ${longURL}`);

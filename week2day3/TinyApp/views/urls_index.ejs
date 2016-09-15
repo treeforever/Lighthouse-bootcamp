@@ -4,11 +4,12 @@
     <h2>Shortened Url</h2>
     <ul>
       <% for (key in urlDatabase) { %>
-        <li><%= key %> ---> <a href="<%= urlDatabase[key]%>"><%= urlDatabase[key] %></a>
-          <form method="POST" action="/urls/<%= key %>?_method=DELETE">
-            <button type="summit">delete</button>
+        <div>
+        <%= key %> ---> <a href="<%= urlDatabase[key]%>"><%= urlDatabase[key] %></a>
+          <a href="/urls/<%= key %>">Edit</a>
+          <form method="POST" action="/urls/<%= key %>?_method=DELETE"><button type="summit">delete</button>
           </form>
-        </li>
+        </div>
       <% }; %>
     </ul>
     <p>did it update?</p>
