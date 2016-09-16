@@ -3,16 +3,15 @@
 <body>
     <h2>Shortened Url</h2>
     <ul>
-      <% for (key in urlDatabase) { %>
+      <% database.forEach(function(obj) { %>
         <div>
-        <%= key %> ---> <a href="<%= urlDatabase[key]%>"><%= urlDatabase[key] %></a>
-          <a href="/urls/<%= key %>">Edit</a>
-          <form method="POST" action="/urls/<%= key %>?_method=DELETE"><button type="summit">delete</button>
-          </form>
+          <%= obj.shortURL %> ---> <a href="<%= obj.longURL%>"><%= obj.longURL %></a>
+            <a href="/urls/<%= obj.shortURL %>">Edit</a>
+            <form method="POST" action="/urls/<%= obj.shortURL %>?_method=DELETE"><button type="summit">delete</button>
+            </form>
         </div>
-      <% }; %>
+      <% }); %>
     </ul>
-    <p>did it update?</p>
 
 </body>
 </html>
