@@ -1,18 +1,18 @@
 /*jshint esversion: 6 */
 'use strict';
 
-var express = require("express");
-var app = express();
+const express = require("express");
+const app = express();
 app.set("view engine", "ejs");
-var methodOverride = require("method-override");
+const methodOverride = require("method-override");
 app.use(methodOverride('_method'));
-var PORT = process.env.PORT || 8080; // default port 8080
-var bodyParser = require("body-parser");
+const PORT = process.env.PORT || 8080; // default port 8080
+const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded());
 const MongoClient = require("mongodb").MongoClient;
 const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
 
-// var urlDatabase = {
+// let urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
 //   "9sm5xK": "http://www.google.com"
 // };
@@ -26,13 +26,28 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
 
   function getLongURL(db, shortURL, cb) {
     let query = { "shortURL": shortURL };
-    db.collection("urls").findOne(query, (err, result) => {
+    collection.findOne(query, (err, result) => {
       if (err) {
-        return cb(err);
+        cb(err);
       }
-      return cb(null, result.longURL);
+      cb(result.longURL);
     });
   }
+
+
+  // collection.save({shortURL: "zzzzz", longURL: "http://www.xindongfang.cn"});
+
+  // getLongURL(db, "zzzzz", function(x) {
+  //   console.log(x);
+  //   console.log("I am here");
+  // });
+  //
+  function search (cb) {
+    collection.find().toArray((err, result) => {
+      cb(result);
+    });
+  }
+
 
   app.get("/", (req, res) => {
     res.end("Hello!");
@@ -44,8 +59,6 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
         database: results
       });
     });
-
-
   });
 
   app.delete("/urls/:id", (req, res) => {
@@ -58,56 +71,63 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
   });
 
   function generateRandomString() {
-    var set = "abcdefghijklmnopqrstuvwxyz0123456789";
-    var randomStr = "";
+    const set = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let randomStr = "";
 
-    for (var i = 0; i < 6; i++) {
-      var randomPosition = Math.floor(Math.random() * 36);
-      var randomvarNum = set[randomPosition];
+    for (let i = 0; i < 6; i++) {
+      let randomPosition = Math.floor(Math.random() * 36);
+      let randomvarNum = set[randomPosition];
       randomStr += randomvarNum;
     }
     return randomStr;
   }
 
   app.post("/urls/create", (req, res) => {
-    var longURL = req.body.longURL;
-    var randomStr = generateRandomString();
+    let randomStr = generateRandomString();
+    let longURL = req.body.longURL;
+    let doc = {
+      shortURL: randomStr,
+      longURL: longURL
+    };
+    console.log(doc.shortURL);
 
-    urlDatabase[randomStr] = longURL;
-    console.log(urlDatabase);
-
-    res.redirect(`http://localhost:8080/urls/${randomStr}`);
-  });
-
-
-  app.get("/urls/:id", (req, res) => {
-    var shortURL = req.params.id;
-
-    var longURL = getLongURL(db,shortURL, function(x, y) {
-      return y;
+    collection.insert(doc, (err, results) => {
+      console.log(doc);
+      console.log("I am in insert");
+      res.redirect(`http://localhost:8080/urls/${randomStr}`);
     });
 
-    res.render("urls_show", {
-      longURL: longURL,
-      shortURL: shortURL
+
+  });
+
+  // collection.update({shortURL: randomStr}, {shortURL: randomStr, longURL: longURL}, function() {
+  //   res.redirect(`http://localhost:8080/urls/${randomStr}`);
+  // });
+  // urlDatabase[randomStr] = longURL;
+  // console.log(urlDatabase)
+
+  app.get("/urls/:id", (req, res) => {
+    let shortURL = req.params.id;
+    console.log("after GET request, shortURL is: " + shortURL);
+    getLongURL(db, shortURL, (result) => {
+      res.render("urls_show", {
+        shortURL: shortURL,
+        longURL: result
+      });
     });
   });
 
   app.put("/urls/:id", (req, res) => {
-    urlDatabase[req.params.id] = req.body.longURL;
-    res.redirect('/urls');
+    collection.update({shortURL: req.params.id}, {shortURL: req.params.id, longURL: req.body.longURL}, function() {
+      res.redirect('/urls');
+    });
   });
 
   app.get("/u/:shortURL", (req, res) => {
-    var shortURL = req.params.shortURL;
-    var longURL = urlDatabase[shortURL];
-    console.log(`shortURL is ${shortURL}, long is ${longURL}`);
-    res.redirect(longURL);
-  });
-
-
-  app.get("/urls.json", (req, res) => {
-    res.json(urlDatabase);
+    let shortURL = req.params.shortURL;
+    getLongURL(db, shortURL, function(x, longURL) {
+      res.redirect(longURL);
+    });
   });
 
   app.get("/hello", (req, res) => {
@@ -117,5 +137,9 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
   });
+  // collection.find().toArray(err, results => {
+  //   console.log(results);
+  // });
 
+  db.close();
 });
