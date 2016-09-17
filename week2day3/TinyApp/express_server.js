@@ -18,15 +18,12 @@ const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
 // };
 MongoClient.connect(MONGODB_URI, (err, db) => {
   if (err) {
-    console.log('Could not connect! Unexpected error. Details below.');
     throw err;
   }
 
-  let collection = db.collection("urls");
-
   function getLongURL(db, shortURL, cb) {
     let query = { "shortURL": shortURL };
-    collection.findOne(query, (err, result) => {
+    db.collection("urls").findOne(query, (err, result) => {
       if (err) {
         cb(err);
       }
@@ -34,36 +31,26 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
     });
   }
 
+  // function search (cb) {
+  //   db.collection("urls").find().toArray((err, result) => {
+  //     cb(result);
+  //   });
+  // }
 
-  // collection.save({shortURL: "zzzzz", longURL: "http://www.xindongfang.cn"});
-
-  // getLongURL(db, "zzzzz", function(x) {
-  //   console.log(x);
-  //   console.log("I am here");
-  // });
-  //
-  function search (cb) {
-    collection.find().toArray((err, result) => {
-      cb(result);
-    });
-  }
-
+  app.get("/hello", (req, res) => {
+    res.end("<html><body>Hello <b>World</b></body></html>\n");
+  });
 
   app.get("/", (req, res) => {
     res.end("Hello!");
   });
 
   app.get("/urls", (req, res) => {
-    collection.find().toArray((err, results) => {
+    db.collection("urls").find().toArray((err, results) => {
       res.render("urls_index", {
         database: results
       });
     });
-  });
-
-  app.delete("/urls/:id", (req, res) => {
-    delete urlDatabase[req.params.id];
-    res.redirect('/urls');
   });
 
   app.get("/urls/new", (req, res) => {
@@ -89,57 +76,43 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
       shortURL: randomStr,
       longURL: longURL
     };
-    console.log(doc.shortURL);
 
-    collection.insert(doc, (err, results) => {
-      console.log(doc);
-      console.log("I am in insert");
+    db.collection("urls").insert(doc, (err, results) => {
       res.redirect(`http://localhost:8080/urls/${randomStr}`);
     });
-
-
   });
-
-  // collection.update({shortURL: randomStr}, {shortURL: randomStr, longURL: longURL}, function() {
-  //   res.redirect(`http://localhost:8080/urls/${randomStr}`);
-  // });
-  // urlDatabase[randomStr] = longURL;
-  // console.log(urlDatabase)
 
   app.get("/urls/:id", (req, res) => {
     let shortURL = req.params.id;
-    console.log("after GET request, shortURL is: " + shortURL);
-    getLongURL(db, shortURL, (result) => {
+    getLongURL(db, shortURL, (longURL) => {
       res.render("urls_show", {
         shortURL: shortURL,
-        longURL: result
+        longURL: longURL
       });
     });
   });
 
   app.put("/urls/:id", (req, res) => {
-    collection.update({shortURL: req.params.id}, {shortURL: req.params.id, longURL: req.body.longURL}, function() {
+    db.collection("urls").update({shortURL: req.params.id}, {shortURL: req.params.id, longURL: req.body.longURL}, function() {
       res.redirect('/urls');
     });
   });
 
-  app.get("/u/:shortURL", (req, res) => {
-    let shortURL = req.params.shortURL;
-    getLongURL(db, shortURL, function(x, longURL) {
-      res.redirect(longURL);
-    });
+  app.delete("/urls/:id", (req, res) => {
+    let shortU = req.params.id;
+    db.collection("urls").deleteOne(
+      {shortURL: shortU},
+      res.redirect('/urls'));
   });
 
-  app.get("/hello", (req, res) => {
-    res.end("<html><body>Hello <b>World</b></body></html>\n");
+  app.get("/u/:shortURL", (req, res) => {
+    let shortURL = req.params.shortURL;
+    getLongURL(db, shortURL, (longURL) => {
+      res.redirect(longURL);
+    });
   });
 
   app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}!`);
   });
-  // collection.find().toArray(err, results => {
-  //   console.log(results);
-  // });
-
-  db.close();
 });
