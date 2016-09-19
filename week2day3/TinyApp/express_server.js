@@ -2,22 +2,26 @@
 'use strict';
 
 const express = require("express");
-const app = express();
-app.set("view engine", "ejs");
 const methodOverride = require("method-override");
-app.use(methodOverride('_method'));
-const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded());
 const MongoClient = require("mongodb").MongoClient;
+
+const PORT = process.env.PORT || 8080;
 const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
+
+const app = express();
+
+app.set("view engine", "ejs");
+app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded());
 
 MongoClient.connect(MONGODB_URI, (err, db) => {
   if (err) {
     throw err;
   }
 
-  function getLongURL(db, shortURL, cb) {
+  //this function will get entire data entry with a specific shortURL.
+  function searchByShortUrl(db, shortURL, cb) {
     let query = { "shortURL": shortURL };
     db.collection("urls").findOne(query, cb);
   }
@@ -38,6 +42,8 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
     res.render("urls_new");
   });
 
+  //This function will generate a random string of 6 letters or numbers, for
+  //the use of shortURL.
   function generateRandomString() {
     const set = "abcdefghijklmnopqrstuvwxyz0123456789";
     let randomStr = "";
@@ -71,7 +77,7 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
   app.get("/urls/:id", (req, res) => {
     let shortURL = req.params.id;
 
-    getLongURL(db, shortURL, (err, result) => {
+    searchByShortUrl(db, shortURL, (err, result) => {
       if (err || result == null) {
         res.redirect("/urls");
       } else {
@@ -103,7 +109,7 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
 
   app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
-    getLongURL(db, shortURL, (err, result) => {
+    searchByShortUrl(db, shortURL, (err, result) => {
       if (err || result == null) {
         res.redirect('/urls');
       } else {
