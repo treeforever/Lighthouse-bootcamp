@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
-    <h2>Shortened Url</h2>
+  <header>
+        <% include partials/_header %>
+  </header>
+
+  <h2>Shortened Url</h2>
 
     <ul>
       <% database.forEach(function(obj) { %>
         <div>
-          <%= obj.shortURL %> ---> <a href="<%= obj.longURL%>"><%= obj.longURL %></a>
+          <a href="http://localhost:8080/u/<%= obj.shortURL %>">http://localhost:8080/u/<%= obj.shortURL %></a> ---> (<a href="<%= obj.longURL%>"><b><%= obj.longURL %></b></a>)
             <a href="/urls/<%= obj.shortURL %>">Edit</a>
             <form method="POST" action="/urls/<%= obj.shortURL %>?_method=DELETE"><button type="summit">delete</button>
             </form>

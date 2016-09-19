@@ -6,17 +6,11 @@ const app = express();
 app.set("view engine", "ejs");
 const methodOverride = require("method-override");
 app.use(methodOverride('_method'));
-const PORT = process.env.PORT || 8080; // default port 8080
+const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded());
 const MongoClient = require("mongodb").MongoClient;
 const MONGODB_URI = "mongodb://127.0.0.1:27017/url_shortener";
-app.use(require('connect-flash')());
-app.use(function (req, res, next) {
-  res.locals.messages = require('express-messages')(req, res);
-  next();
-});
-
 
 MongoClient.connect(MONGODB_URI, (err, db) => {
   if (err) {
@@ -28,19 +22,14 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
     db.collection("urls").findOne(query, cb);
   }
 
-  app.get("/hello", (req, res) => {
-    res.end("<html><body>Hello <b>World</b></body></html>\n");
-  });
-
   app.get("/", (req, res) => {
-    res.end("Hello!");
+    res.redirect("/urls/new");
   });
 
   app.get("/urls", (req, res) => {
     db.collection("urls").find().toArray((err, results) => {
       res.render("urls_index", {
         database: results
-        // messages: req.flash('error')
       });
     });
   });
@@ -112,18 +101,18 @@ MongoClient.connect(MONGODB_URI, (err, db) => {
       res.redirect('/urls'));
     });
 
-    app.get("/u/:shortURL", (req, res) => {
-      let shortURL = req.params.shortURL;
-      getLongURL(db, shortURL, (err, result) => {
-        if (err || result == null) {
-          res.redirect('/urls');
-        } else {
-          res.redirect(undefined, result.longURL);
-        }
-      });
-    });
-
-    app.listen(PORT, () => {
-      console.log(`Example app listening on port ${PORT}!`);
+  app.get("/u/:shortURL", (req, res) => {
+    let shortURL = req.params.shortURL;
+    getLongURL(db, shortURL, (err, result) => {
+      if (err || result == null) {
+        res.redirect('/urls');
+      } else {
+        res.redirect(result.longURL);
+      }
     });
   });
+
+  app.listen(PORT, () => {
+    console.log(`Example app listening on port ${PORT}!`);
+  });
+});
